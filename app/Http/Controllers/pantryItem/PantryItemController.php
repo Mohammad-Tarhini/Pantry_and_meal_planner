@@ -59,7 +59,7 @@ class PantryItemController extends Controller
                    'unit' => 'sometime|exists:units,name',
                    'location' => 'sometime|string',
                ]);
-            $result=PantryItemServices::UpdatePantryItemService($date,$user);
+            $result=$this->PantryItemServices->UpdatePantryItemService($date,$user);
             return ResponsTraits::success(data:$result);
        }catch(\exception $e){
          return ResponsTraits::error(error:$e);
@@ -69,16 +69,36 @@ class PantryItemController extends Controller
         try{
             $user=Autho::user();
             if(!$user){
-                       return Response::error("user is not authonticated");
+                return Response::error("user is not authonticated");
             }
             $data= $request->validate([
                 'item_id'=>'require|int',
             ]);
-    
-            $result=PantryItemServices->GetPantryItemByIdService($data,$user);
+            $item_id=$data['item_id'];
+            $result=$this->PantryItemServices->GetPantryItemByIdService($item_id,$user);
+            return ResponseTraits::success(data:$result);
         }catch(\exception $e){
             return ResponsTraits::error(error:$e);
         }
-        
     }
+    public function DeletePantryItemByID(Request $request){
+        try{
+            $user=Autho::user();
+            if(!$user){
+                return Response::error("user is not authonticated");
+            }
+            $data= $request->validate([
+                'item_id'=>'require|int',
+                
+            ]);
+            $item_id=$data['item_id'];
+            $result=$this->PantryItemServices->DeletePantryItemService($item_id,$user);
+            return ResponsTraits::success(data:$result,message:"deleted");
+
+        }catch(\exception $e){
+            return ResponsTraits::error(error:$e);
+        }
+    }
+
+    
 }

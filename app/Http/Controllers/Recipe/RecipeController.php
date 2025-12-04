@@ -22,11 +22,11 @@ class RecipeController extends Controller
 
         $user = Auth::user();
 
-        if (!$user->household) {
+        if (!$user) {
             return ResponseTrait::error("This user does not have a household.", 400);
         }
 
-        $result = RecipesService::saveRecipeService($data, $user->household->id);
+        $result =$this-> RecipesService->saveRecipeServiceService($data, $user);
         
 
         return ResponseTrait::success($result, "Recipe saved successfully");
@@ -37,21 +37,22 @@ class RecipeController extends Controller
 
     function CreateRecipeByAiReturnToUser(Request $request){
         try{
+            $user = Auth::user();
+    
+            if (!$user) {
+                return ResponseTrait::error("This user does not have a household.", 400);
+            }           
             $request->validate([
                 'usertext'=>'required|string',
 
             ]);
             $userText=$request->input('userText');
 
-            $user = Auth::user();
+
     
-            if (!$user->household) {
-                return ResponseTrait::error("This user does not have a household.", 400);
-            }
-    
-            $result = RecipesService::createRecipseByAiASUserWantAndReturnToCLient($userText, $user->household->id);
+            $result = $this->RecipesService->createRecipseByAiASUserWantAndReturnToCLientService($userText, $user);
             if($result['success']){
-                return ResponseTrait::success($result['messsage'],$result['data']);
+                return ResponseTrait::success(message:$result['messsage'],data:$result['data']);
             }
             else {
                 return ResponseTrait::error($result['message']);
@@ -61,6 +62,18 @@ class RecipeController extends Controller
             return ResponseTrait::error($e->getMessage(), 400);
         }
     }
+    function GetAllRecipes(Request $request){
+            $user = Auth::user();
+            if (!$user) {
+                return ResponseTrait::error("This user is not authorized", 400);
+            }
+            $data=$request->validate([
+                'houseHolderId'=>'sometime|int'
+            ]);
+            $houseHolderId=$data['houseHolderId'];
+
+    }
+     
 }
 
    

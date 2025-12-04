@@ -41,25 +41,30 @@ class PantryItemServices
         throw new \Exception("The data couldn't be saved");
     }
 
-    public  function UpdatePantryItemService($itemId, $data)
+    public  function UpdatePantryItemService($itemId, $data,$user)
     {
-        $pantryItem = PantryItem::find($itemId);
-        if ($pantryItem) {
-            $pantryItem->update($data);
-            return $pantryItem;
+        $item=$this->CheckIfItemIsForThisUser($itemId,$user);
+        if ($item) {
+            $item->update($data);
+            return $item;
         }
         throw  new \Exception( "is not exist");
     }
-    public static function DeletePantryItem($itemId)
+    public static function DeletePantryItemService($itemId,$user)
     {
-        $pantryItem = PantryItem::find($itemId);
-        if ($pantryItem) {
-            $pantryItem->delete();
-            return "Deleted successfully";
+        $item=$this->CheckIfItemIsForThisUser($itemId,$user);
+        if ($item) {
+            $item->delete();
+            return $tiem ;
         }
-        return "is not exist";
+        throw new \Exception( "is not exist");
     }
      public static function GetPantryItemByIdService($itemId,$user){
+        $item=$this->CheckIfItemIsForThisUser($itemId,$user);
+        return $item;
+
+     }
+     function CheckIfItemIsForThisUser($itemId,$user){
         $admin=Admin::where('user_id',$user->id);
         $householder=Householder::where('user_id',$user->id);
         $member=HouseHolderMember::where('user_id',$user->id);
@@ -81,7 +86,6 @@ class PantryItemServices
             throw new \Exception("this item is not for you");
         }
         return $pantryItem;
-    
      }
 }
 

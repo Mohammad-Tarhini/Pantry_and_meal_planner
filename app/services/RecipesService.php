@@ -8,13 +8,31 @@ use App\Services\UseAIService;
 class RecipesService
 {
     // Recipe service methods would go here
-    function getAllRecipesForHouseHolder($userId)
+    function getAllRecipesForHouseHolder($user,$houseHolderIdFromAdmin)
     {
-        $Recipes = Recipe::where('household_id', $userId)->get();
+        $admin=Admin::Where('user_id',$user->id)->first();
+        $member=HouseHolderMember::where('user_id',$user->id)-first();
+        $householder=Householder::where('user_id',$user->id)->first();
+        if($admin){
+            if($houseHolderIdFromAdmin){
+                $houseHolder_id=$houseHolderIdFromAdmin;
+            }else{
+                return Recipe::All();
+                
+            }
+            
+        }else if($member){
+            $houseHolder_id=$member->$householder_id;
+        }
+        else if ($householder){
+            $houseHolder_id=$householder->id;
+        }
+        $Recipes = Recipe::where('household_id', $houseHolder_id)->first();
         return $Recipes;
     }
-    public static function   createRecipseByAiASUserWantAndReturnToCLient($userTxt, $household_id)
+    public  function   createRecipseByAiASUserWantAndReturnToCLientService($userTxt, $user)
     {
+        $household_id=$householder->id;
         $gradientItems=PantryItemServices::GetAllPantryItemsForHouseHolder($household_id);
         $gradientItem_string=json_encode($gradientItems);
         $useAIService=new UseAIService();
@@ -36,9 +54,15 @@ class RecipesService
         }
 
     }
-    public static function saveRecipeService($data, $houseHolderId)
+    public  function saveRecipeServiceService($data, $user)
     {
-        try {
+         try {
+            $householder=$Householder::where('user_id',$user->id);
+            if(!$householder){
+                throw  new \Exception( "this user is not the householder"); 
+            }
+            $houseHolderId=$householder->id;
+       
             DB::beginTransaction();
     
             // Save Recipe
@@ -83,25 +107,6 @@ class RecipesService
             return $recipe;
         }
         return "is not exist";
-    }
-    function InsertRecipeAfterCreateByAi($data)
-    {
-        // Logic to insert a recipe
-
-
-
-    }
-    function InsertRecipeFromClientSide($data)
-    {
-        // Logic to insert a recipe from client side
-        $Recipe=new Recipe();
-        $Recipe->title=$data['title'];
-        $Recipe->ingredients=$data['ingredients'];
-        $Recipe->instructions=$data['instructions'];
-        $Recipe->household_id=$data['household_id'];
-        $Recipe->save();
-        return $Recipe;
-
     }
 
 
