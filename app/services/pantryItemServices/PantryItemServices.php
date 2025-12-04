@@ -3,12 +3,23 @@
 class PantryItemServices
 {
     //
-    public static function GetAllPantryItemsForHouseHolder($householdId)
+    public function getPantryItem($request)
     {
-        return PantryItem::where('household_id', $householdId)->get();
-    }
-    public static function AddPantryItem($data)
+        $user = Auth::user();
+
+        if ($user->isAdmin()) {
+            return $this->adminService->getPantryItems($request);
+        }
+
+        return $this->userService->getPantryItems($user);
+    } 
+
+    public static function AddPantryItemService($data,$user)
     {
+        $householder=HouseHolder::where('user_id',$user->user_id);
+        if(!$householder){
+            throw new \Exception ("is not house holder");
+        }
         $unit = Unit::where('name', $data["unit"])->first();
         if (!$unit) {
             throw new \Exception("No such unit exists");
@@ -30,14 +41,14 @@ class PantryItemServices
         throw new \Exception("The data couldn't be saved");
     }
 
-    public static function UpdatePantryItem($itemId, $data)
+    public  function UpdatePantryItemService($itemId, $data)
     {
         $pantryItem = PantryItem::find($itemId);
         if ($pantryItem) {
             $pantryItem->update($data);
             return $pantryItem;
         }
-        return "is not exist";
+        throw  new \Exception( "is not exist");
     }
     public static function DeletePantryItem($itemId)
     {
