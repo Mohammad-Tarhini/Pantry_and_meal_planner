@@ -78,6 +78,23 @@ class RecipeController extends Controller
             return ResponseTrait::error($e->getMessage(), 400);
         }
     }
+    function GetIngrediantForRecipe(Request $request){
+        try{
+            $user=Autho::user();
+            if(!$user){
+                return ResponseTrait::error("This user is not authorized", 400);
+            }
+            $data=$request->validate([
+                'recipe_id'=>'required|int'
+            ]);
+            $recipe_id=$data['recipe_id'];
+            $result=$this->RecipeService->GetIngrediantForRecipeService($recipe_id);
+            return ResponseTrait::success($result);
+
+        }catch(\Exception $e){
+            return ResponseTrait::error($e->getMessage(), 400);
+        }
+    }
     function delete(Request $request){
         try{
             $user=Auth::user();
@@ -88,8 +105,17 @@ class RecipeController extends Controller
                 'recipe_id'=>'require|int ',
             ]);
             $recipe_id=$request->input('recipe_id');
-            
+            $result=$this->$RecipesService->deleteService($user,$recipe_id);
+            return Responsetrait::success(data:$result,message:"this data is deleted correctly");
 
+
+
+        }catch(\Exception $e){
+            return ResponseTrait::error($e->getMessage(),400);
+        }
+    }
+    function updateRecipe(Request $request){
+        try{
 
 
         }catch(\Exception $e){
