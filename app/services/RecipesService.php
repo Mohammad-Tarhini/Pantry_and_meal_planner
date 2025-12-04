@@ -27,7 +27,7 @@ class RecipesService
         else if ($householder){
             $houseHolder_id=$householder->id;
         }
-        $Recipes = Recipe::where('household_id', $houseHolder_id)->first();
+        $Recipes = Recipe::where('household_id', $houseHolder_id)->get();
         return $Recipes;
     }
     public  function   createRecipseByAiASUserWantAndReturnToCLientService($userTxt, $user)
@@ -99,14 +99,33 @@ class RecipesService
         }
     }
 
-    function updateRecipe($id, $data)
-    {
-        $recipe = Recipe::find($id);
-        if ($recipe) {
-            $recipe->update($data);
-            return $recipe;
+    // function updateRecipe($id, $data)
+    // {
+    //     $recipe = Recipe::find($id);
+    //     if ($recipe) {
+    //         $recipe->update($data);
+    //         return $recipe;
+    //     }
+    //     return "is not exist";
+    // }
+    function delete($user,$recipeId){
+        $admin=Admin::where('user_id',$user->id)->firrst();
+        $member=HouseHolderMember::where('user_id',$user->id)->first();
+        $householder=Household::where('user_id',$user->id)->first();
+        if($member){
+            throw new \Exception('the member can not delete');
         }
-        return "is not exist";
+        $recipes=Recipe::where('recipe_id',$recipe_id);
+        if($householder){
+            if($recipe->househoulder_id !==$householder->householder_id){
+                throw new \Exception('this item is not for this user ');
+            }
+        }
+         DB::beginTransaction();
+         foreach($recipes as $recipe){
+            
+         }
+        
     }
 
 

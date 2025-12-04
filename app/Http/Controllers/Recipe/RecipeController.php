@@ -63,6 +63,7 @@ class RecipeController extends Controller
         }
     }
     function GetAllRecipes(Request $request){
+        try{
             $user = Auth::user();
             if (!$user) {
                 return ResponseTrait::error("This user is not authorized", 400);
@@ -71,7 +72,29 @@ class RecipeController extends Controller
                 'houseHolderId'=>'sometime|int'
             ]);
             $houseHolderId=$data['houseHolderId'];
+            $result=$this->RecipesService->getAllRecipesForHouseHolder($user,$houseHolderId);
+            return ResponseTrait::success(data:$result);
+        }catch(\Exception $e){
+            return ResponseTrait::error($e->getMessage(), 400);
+        }
+    }
+    function delete(Request $request){
+        try{
+            $user=Auth::user();
+            if(!$user){
+                return ResponseTrait::error("the user is not authorized");
+            }
+            $request->validate([
+                'recipe_id'=>'require|int ',
+            ]);
+            $recipe_id=$request->input('recipe_id');
+            
 
+
+
+        }catch(\Exception $e){
+            return ResponseTrait::error($e->getMessage(),400);
+        }
     }
      
 }
