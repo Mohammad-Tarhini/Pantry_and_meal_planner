@@ -61,12 +61,24 @@ class PantryItemController extends Controller
                ]);
             $result=PantryItemServices::UpdatePantryItemService($date,$user);
             return ResponsTraits::success(data:$result);
-
-    
-
        }catch(\exception $e){
          return ResponsTraits::error(error:$e);
        }
     }
-     
+    public function GetPantryItemById(Request $request){
+        try{
+            $user=Autho::user();
+            if(!$user){
+                       return Response::error("user is not authonticated");
+            }
+            $data= $request->validate([
+                'item_id'=>'require|int',
+            ]);
+    
+            $result=PantryItemServices->GetPantryItemByIdService($data,$user);
+        }catch(\exception $e){
+            return ResponsTraits::error(error:$e);
+        }
+        
+    }
 }

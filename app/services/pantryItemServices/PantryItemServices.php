@@ -6,8 +6,8 @@ class PantryItemServices
     public function getPantryItem($request)
     {
         $user = Auth::user();
-
-        if ($user->isAdmin()) {
+        $admin=Admin::where('user_id',$user->id)->first();
+        if ($admin) {
             return $this->adminService->getPantryItems($request);
         }
 
@@ -59,12 +59,29 @@ class PantryItemServices
         }
         return "is not exist";
     }
-     public static function GetPantryItemById($itemId){
-        $pantryItem = PantryItem::find($itemId);
-        if ($pantryItem) {
-            return $pantryItem;
+     public static function GetPantryItemByIdService($itemId,$user){
+        $admin=Admin::where('user_id',$user->id);
+        $householder=Householder::where('user_id',$user->id);
+        $member=HouseHolderMember::where('user_id',$user->id);
+        if(!$admin && !$householder && !$member){
+             throw  new \Exception( "user is not  ");
         }
-        return "is not exist";
+        $pantryItem = PantryItem::find($itemId);
+        if (!$pantryItem) {
+           throw  new \Exception( "the item not found ");
+        }
+
+        if($member){
+            $householderId=$member->householder_id;
+        }
+        if($householder){
+            $householderId=$householder->id;
+        }
+        if($pantryItem->householder_id !== $householder_id){
+            throw new \Exception("this item is not for you");
+        }
+        return $pantryItem;
+    
      }
 }
 
