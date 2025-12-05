@@ -76,9 +76,8 @@ class ShoppingListController extends Controller
                 'items.*.unit_id' => 'nullable|exists:units,id',
                 'items.*.is_bought' => 'sometimes|boolean'                
             ]);
-           
-            
-
+            $result=$this->ShoppingListService->updataShopList($data,$user);
+            return ResponseTrait::success($result);
         }catch(Exception $e){
             ResponseTrait::error($e);
         }
@@ -99,7 +98,9 @@ class ShoppingListController extends Controller
             if(!$user){
                 return ResponseTrait::error("the user is authorized");
             }
-
+            $houseHolderIdForAdmin=$request->input('houseHolderIdForAdmin');
+            $result=$this->ShoppingListService->GetAllShopList($user,$houseHolderIdForAdmin);
+            return ResponseTrait::success(data:$result);
         }catch(Exception $e){
             ResponseTrait::error($e);
         }
@@ -110,6 +111,9 @@ class ShoppingListController extends Controller
             if(!$user){
                 return ResponseTrait::error("the user is authorized");
             }
+            $shopListId=$request->input('shopListId');
+            $result=$this->ShoppingListService->GetAllItemsOfShopList($user,$shopListId);
+            return ResponseTrait::success(data:$result);
         }catch(Exception $e){
             ResponseTrait::error($e);
         }

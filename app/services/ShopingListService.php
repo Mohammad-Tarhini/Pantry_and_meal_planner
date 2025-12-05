@@ -97,6 +97,7 @@ class ShopingListService{
         if(!$houseHolderId){
             throw Exception("errorre");
         }
+        
         $shopList=ShoppingList::where('householder_id',$houseHolderId);
         if(!$shopList){
             throw Exception("no shopping Lists ");
