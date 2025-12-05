@@ -16,7 +16,7 @@ class MealPlanController extends Controller
                 'UseOldRecipe'=>'sometime|boolean'
             ]);
             $text=$request->input('text');
-            $useOldRecipe->input('UseOldRecipe');
+            $useOldRecipe=$request->input('UseOldRecipe');
             if($useOldRecipe){
                  $result=$this->MealPlanService->GenerateMealByAIForWeakWithRecipes($text,$user);
             }else{
@@ -62,10 +62,19 @@ class MealPlanController extends Controller
         try{
             $user=Autho::user();
             
+            $meal_plan_id=$request->input ('meal_plan_id');
+            $result=$this->MealPlanService->GetMealsOfWeak($user,$meal_plan_id);
+            return ResponseTrait::success(data:$result);
         }catch(Exception $e){
             return ResponseTrait::error($e);
         }
     }
+    // public function DeleteWeakPlanMeals(Request $request){
+
+    // }
+    // public function DeleteMealPlan(){
+
+    // }
 
 
     
