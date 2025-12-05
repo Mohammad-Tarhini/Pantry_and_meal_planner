@@ -68,7 +68,64 @@ class ShopingListService{
         } 
         return $addShoppingListItems;
     }
-    public function updataShopList(){
+    public function updataShopList($data,$user){
+        $houseHolderId=CheckUserRoleAndGetHouseHolderId($user);
+        if(!$houseHolderId){
+            throw Exception("errorre");
+        }
+        foreach($data['items'] as $data){
+            $item = ShoppingListItem::findOrFail($id);
+            $item->name = $data['name'];
+            $item->quantity = $data['quantity'];
+            $item->unit_id = $data['unit_id'];
+            $item->is_bought = $data['is_bought'];   
+            $item->save(); 
+        }
+        return "item updated correctly";  
+    }
+    public function GetAllShopList($user,$houseHolderIdForAdmin){
+        $admin=Admin::Where('user_id',$user->id);
+        if($admin){ 
+            if($houseHolderIdForAdmin){
+                $houseHolderId=$houseHolderIdForAdmin;
+            }else{
+                $shoplist=ShoppingList::All()->get();
+                return $shopList;
+            }
+        }
+        $houseHolderId=CheckUserRoleAndGetHouseHolderId($user);
+        if(!$houseHolderId){
+            throw Exception("errorre");
+        }
+        $shopList=ShoppingList::where('householder_id',$houseHolderId);
+        if(!$shopList){
+            throw Exception("no shopping Lists ");
+        }
+        return $shopList;
+    }
+    public function GetAllItemsOfShopList($user,$shopListId){
+        $admin=Admin::Where('user_id',$user->id);
+        if($admin){ 
+            if($houseHolderIdForAdmin){
+                $houseHolderId=$houseHolderIdForAdmin;
+            }else{
+                $shoplist=ShoppingListItem::All()->get();
+                return $shopList;
+            }
+        }
+        $houseHolderId=CheckUserRoleAndGetHouseHolderId($user);
+        if(!$houseHolderId){
+            throw Exception("errorre");
+        }
+        $shoppingList=ShoppingList::where('id',$shopListId);
+        if($shoppingList->householder_id !== $houseHolderId){
+            throw Exception("this shopping lsit is not for this user  ");
+        }
+        $ItemOfShopList=ShoppingListItem::where('shopping_list_id',$shopListId);
+        if(!$ItemOfShopList){
+            throw Exception("no item on this shopping list");
+        }
+        return $ItemOfShopList;
 
     }
 }

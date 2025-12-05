@@ -61,33 +61,45 @@ class ShoppingListController extends Controller
             return ResponseTrait::error($e);
         }
     }
-    public function updateShopList(Request $request){
+    public function UpdateShopList(Request $request){
         try{
             $user=Autho::user();
             if(!$user){
                 return ResponseTrait::error("the user is authorized");
             }
+            $data=$request->validate([
+                'shopping_list_id'=>'required|exists:shopping_lists,id',
+                'items' => 'required|array|min:1',
+                'items.*.item_id'=>'required|int',
+                'items.*.name' => 'required|string|max:255',
+                'items.*.quantity' => 'nullable|numeric|min:0',
+                'items.*.unit_id' => 'nullable|exists:units,id',
+                'items.*.is_bought' => 'sometimes|boolean'                
+            ]);
+           
             
+
         }catch(Exception $e){
             ResponseTrait::error($e);
         }
     }
-    public function isBought(Request $request ){
-        try{
-            $user=Autho::user();
-            if(!$user){
-                return ResponseTrait::error("the user is authorized");
-            }
-        }catch(Exception $e){
-            ResponseTrait::error($e);
-        }
-    }
+    // public function isBought(Request $request ){
+    //     try{
+    //         $user=Autho::user();
+    //         if(!$user){
+    //             return ResponseTrait::error("the user is authorized");
+    //         }
+    //     }catch(Exception $e){
+    //         ResponseTrait::error($e);
+    //     }
+    // }
     public function GetAllShopList(Request $request ){
         try{
             $user=Autho::user();
             if(!$user){
                 return ResponseTrait::error("the user is authorized");
             }
+
         }catch(Exception $e){
             ResponseTrait::error($e);
         }
