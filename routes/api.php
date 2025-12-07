@@ -23,51 +23,74 @@ Route::post("/logout", [AuthController::class, "logout"]);
 // API v0.1 with auth middleware
 Route::group(["prefix" => "v0.1", "middleware" => "auth:api"], function () {
 
-    // === Expense Routes ===
-    Route::prefix("expense")->group(function () {
-        Route::get("/", [ExpenseController::class, "index"]);
-        Route::post("/", [ExpenseController::class, "store"]);
-        Route::put("/{id}", [ExpenseController::class, "update"]);
-        Route::delete("/{id}", [ExpenseController::class, "destroy"]);
-    });
+   // ===============================
+// EXPENSE ROUTES
+// ===============================
+Route::prefix('expense')->group(function () {
+    Route::post('/enter-invoice', [ExpenseController::class, 'EnterInvoice']);
+});
 
-    // === Householder Routes ===
-    Route::prefix("householder")->group(function () {
-        Route::get("/", [HouseholderController::class, "index"]);
-        Route::post("/", [HouseholderController::class, "store"]);
-    });
 
-    // === Meal Plan Routes ===
-    Route::prefix("meal-plan")->group(function () {
-        Route::get("/", [MealPlanController::class, "getMealPlans"]);
-        Route::post("/", [MealPlanController::class, "AddMealPlan"]);
-    });
+// ===============================
+// MEAL PLAN ROUTES
+// ===============================
+Route::prefix('meal-plan')->group(function () {
 
-    // === Pantry Item Routes ===
-    Route::prefix("pantry")->group(function () {
-        Route::get("/", [PantryItemController::class, "getPantryItems"]);
-        Route::post("/", [PantryItemController::class, "AddPlanteryItem"]);
-        Route::put("/", [PantryItemController::class, "UpdatePantryItem"]);
-        Route::get("/item", [PantryItemController::class, "GetPantryItemById"]);
-        Route::delete("/item", [PantryItemController::class, "DeletePantryItemByID"]);
-    });
+    Route::post('/create-week-ai', [MealPlanController::class, 'createWeekMealByAi']);
 
-    // === Recipe Routes ===
-    Route::prefix("recipe")->group(function () {
-        Route::post("/", [RecipeController::class, "saveRecipe"]);
-        Route::post("/ai-create", [RecipeController::class, "CreateRecipeByAiReturnToUser"]);
-        Route::get("/", [RecipeController::class, "GetAllRecipes"]);
-        Route::get("/ingredients", [RecipeController::class, "GetIngrediantForRecipe"]);
-        Route::put("/", [RecipeController::class, "updateRecipe"]);
-        Route::delete("/", [RecipeController::class, "delete"]);
-    });
+    Route::post('/save-week', [MealPlanController::class, 'saveMealsForWeek']);
 
-    // === Shopping List Routes ===
-    Route::prefix("shopping-list")->group(function () {
-        Route::post("/", [ShoppingListController::class, "PostShopListFromClient"]);
-        Route::post("/add-items", [ShoppingListController::class, "AddItemForShopList"]);
-        Route::put("/", [ShoppingListController::class, "UpdateShopList"]);
-        Route::get("/", [ShoppingListController::class, "GetAllShopList"]);
-        Route::get("/items", [ShoppingListController::class, "GetShopListItem"]);
-    });
+    Route::get('/get-meals', [MealPlanController::class, 'getMeals']);
+});
+
+
+// ===============================
+// PANTRY ITEM ROUTES
+// ===============================
+Route::prefix('pantry')->group(function () {
+
+    Route::get('/items', [PantryItemController::class, 'getPantryItems']);
+
+    Route::post('/item', [PantryItemController::class, 'addPantryItem']);
+
+    Route::put('/item/{itemId}', [PantryItemController::class, 'updatePantryItem']);
+
+    Route::get('/item/{itemId}', [PantryItemController::class, 'getPantryItemById']);
+
+    Route::post('/item/{itemId}', [PantryItemController::class, 'deletePantryItem']);
+});
+
+
+// ===============================
+// RECIPE ROUTES
+// ===============================
+Route::prefix('recipe')->group(function () {
+
+    Route::post('/save', [RecipeController::class, 'saveRecipe']);
+
+    Route::post('/create-by-ai', [RecipeController::class, 'CreateRecipeByAiReturnToUser']);
+
+    Route::get('/all', [RecipeController::class, 'GetAllRecipes']);
+
+    Route::get('/ingredients', [RecipeController::class, 'GetIngredientForRecipe']);
+
+    Route::post('/delete', [RecipeController::class, 'delete']);
+});
+
+
+// ===============================
+// SHOPPING LIST ROUTES
+// ===============================
+Route::prefix('shopping-list')->group(function () {
+
+    Route::post('/create', [ShoppingListController::class, 'postShopListFromClient']);
+
+    Route::post('/add-items', [ShoppingListController::class, 'addItemForShopList']);
+
+    Route::post('/update', [ShoppingListController::class, 'updateShopList']);
+
+    Route::get('/all', [ShoppingListController::class, 'getAllShopLists']);
+
+    Route::get('/items', [ShoppingListController::class, 'getShopListItems']);
+});
 });
